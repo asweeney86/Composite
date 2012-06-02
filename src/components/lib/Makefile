@@ -34,9 +34,9 @@ clean:
 	@rm -f a.out *.o *.a *.d *~
 
 distclean:
-	make -C dietlibc-0.29 clean
+	make -C dietlibc clean
 	make -C lwip/cos clean	
 
 init: clean distclean all
-	make -C dietlibc-0.29
+	make -C dietlibc
 	make -C lwip/cos

@@ -1,0 +1,3 @@
+[submodule "src/components/lib/dietlibc"]
+	path = src/components/lib/dietlibc
+	url = git://github.com/asweeney86/dietlibc.git
