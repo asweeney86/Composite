@@ -93,7 +93,7 @@ clean:
 
 depend dep: .depend
 
-include .depend
+-include .depend
 
 .depend: $(LWIPFILES) 
 	$(CCDEP) $(CFLAGS) -MM $^ > .depend || rm -f .depend
