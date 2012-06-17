@@ -1,16 +1,17 @@
 include Makefile.src
 
 default:
-	$(MAKE) -C linux
+	$(Q) $(MAKE) -C linux
 
 cp:
-	$(MAKE) -C linux cp
+	$(Q) $(MAKE) -C linux cp
 
 clean:
-	$(MAKE) -C linux clean
-	$(MAKE) -C tests clean
+	$(Q) $(MAKE) -C linux clean
+	$(Q) $(MAKE) -C tests clean
 
 init: clean default
 
 ltests:
-	$(MAKE) -C tests 
+	$(call print_header, Building Platform Tests)
+	$(Q) $(MAKE) -C tests 

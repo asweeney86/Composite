@@ -1,11 +1,12 @@
+include Makefile.src
 TESTS=$(wildcard */)
 
 all:
-	@for dir in $(TESTS) ; do \
-		make -C $$dir ; \
+	$(Q)for dir in $(TESTS) ; do \
+		$(MAKE) -C $$dir ; \
 	done
 
 clean:
-	@for dir in $(TESTS) ; do \
-		make -C $$dir clean ; \
+	$(Q)for dir in $(TESTS) ; do \
+		$(MAKE) -C $$dir clean ; \
 	done

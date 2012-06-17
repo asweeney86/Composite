@@ -30,10 +30,12 @@
 #
 include ../../../../Makefile.src
 include ../../../Makefile.comp
-$(info $(CINC))
+#$(info $(CINC))
 
-CCDEP=gcc
-CC=gcc
+#CCDEP=gcc
+#CC=gcc
+CCDEP=$(CC)
+
 #To compile for linux: make ARCH=linux
 #To compile for cygwin: make ARCH=cygwin
 #To compile for openbsd: make ARCH=openbsd
@@ -89,17 +91,21 @@ all: .depend $(OUTPUT_OBJ)
 .PHONY: all
 
 clean:
-	rm -f *.o $(OUTPUT_OBJ) .depend* 
+	$(Q) rm -f *.o $(OUTPUT_OBJ) .depend* 
 
 depend dep: .depend
 
 -include .depend
 
 .depend: $(LWIPFILES) 
-	$(CCDEP) $(CFLAGS) -MM $^ > .depend || rm -f .depend
+	$(E) $(CC_STR) Creating .depend
+	$(Q) $(CCDEP) $(CFLAGS) -MM $^ > .depend || rm -f .depend
 
 $(OUTPUT_OBJ): $(LWIPOBJS)
-	ld -r -o $@ $^
+	$(E) $(LD_STR) $@
+	$(Q) $(LD) -r -o $@ $^
 
 %.o:
-	$(CC) $(CFLAGS) -c $(<:.o=.c)
+	$(E) $(CC_STR) $<
+	$(Q) $(CC) $(CFLAGS) -c $(<:.o=.c)
+

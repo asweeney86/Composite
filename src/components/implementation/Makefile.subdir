@@ -19,45 +19,45 @@ SOURCE_DEPENDENCIES=$(SOURCES:%.c=%.d)
 all: $(SOURCE_DEPENDENCIES) $(CLIB) subdirs
 
 subdirs:
-	@for dir in $(SUBDIRS) ; do \
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) -C $$dir ; \
 	done
 
 $(CLIB):$(OBJS)
 ifneq ($(strip $(OBJS)),)
-#	$(info |     [LD]   Creating $(CLIB) for $(INTERFACES))
-	@$(LD) -r -o $@ $^
+	$(E) $(LD_STR) $@
+	$(Q) $(LD) -r -o $@ $^
 endif
 
 %.o:%.c
-	$(info |     [CC]   $<: Compiling)
-	@$(CC) $(INCLUDE) $(CFLAGS) -o $@ -c $<
+	$(E) $(CC_STR) $<: Compiling
+	$(Q) $(CC) $(INCLUDE) $(CFLAGS) -o $@ -c $<
 
 %.o:%.S
-#	$(info |     [AS]   Compiling assembly file $^ into $@)
-	$(info |     [AS]   $<: Compiling)
-	@$(AS) $(INCLUDE) $(ASFLAGS) -c -o $@ $^
+	$(E) $(AS_STR)  $<: Compiling
+	$(Q) $(AS) $(INCLUDE) $(ASFLAGS) -c -o $@ $^
 
 # see the make manual: create the .d dependencies from include
 # statements.
 %.d:%.c
-#	$(info |     [DEP]  Creating dependency file for $<)
-	@set -e; rm -f $@; \
+	$(E) $(DEP_STR) Creating dependency file for $<
+	$(Q) set -e; rm -f $@; \
 	$(CC) -M $(INCLUDE) $(CFLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 .PHONY: cp
 cp:
-	@for dir in $(SUBDIRS) ; do \
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) -C $$dir cp ; \
 	done
 
+#	$(info |     [RM]   Cleaning up implementation directory for interface $(IFNAME))
 .PHONY: clean
 clean:
-#	$(info |     [RM]   Cleaning up implementation directory for interface $(IFNAME))
-	@rm -f a.out *.o *.a *.d *.d.* *~
-	@for dir in $(SUBDIRS) ; do \
+	$(E) $(RM_STR) Cleaning $(IFNAME)
+	$(Q) $(RM) -f a.out *.o *.a *.d *.d.* *~
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) -C $$dir clean ; \
 	done
 

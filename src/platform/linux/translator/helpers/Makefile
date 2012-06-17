@@ -1,16 +1,17 @@
+include Makefile.src
 HELPERS=$(wildcard */)
 
 all:
-	@for dir in $(HELPERS) ; do \
-		make -C $$dir ; \
+	$(Q)for dir in $(HELPERS) ; do \
+		$(MAKE) -C $$dir ; \
 	done
 
 cp:
-	@for dir in $(HELPERS) ; do \
-		make -C $$dir cp; \
+	$(Q)for dir in $(HELPERS) ; do \
+		$(MAKE) -C $$dir cp; \
 	done
 
 clean:
-	@for dir in $(HELPERS) ; do \
-		make -C $$dir clean ; \
+	$(Q)for dir in $(HELPERS) ; do \
+		$(MAKE) -C $$dir clean ; \
 	done

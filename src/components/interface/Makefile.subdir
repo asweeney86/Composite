@@ -18,36 +18,36 @@ FNEXP_FILE=.fn_exports
 all: $(LIBS) stubs expgen
 
 expgen:
-	@sh $(EXPDEP_GEN) > $(FNEXP_FILE)
+	$(Q) sh $(EXPDEP_GEN) > $(FNEXP_FILE)
 
 # we have to compile these without dietlibc so that there are not
 # symbol conflicts and this is why we have the %.a here and don't
 # output a .a file.
 %.a:%.o
-#	$(info |     [AR]   Creating library file lib$(IFNAME).a from $<)
-#	$(info |     [AR]   lib$(IFNAME).a: create library $<)
-	@$(AR) cr lib$(IFNAME).a $<
+	$(E) $(AR_STR) lib$(IFNAME).a
+	$(Q) $(AR) cr lib$(IFNAME).a $<
 
 %.o:%.c
-#	$(info |     [CC]   Compiling c file $^ into $@)
-	@$(CC) $(CFLAGS) $(INCLUDES) $(CINC) $(DEP_INC) -c -o $(@) $<
+	$(E) $(CC_STR) $^ $@
+	$(Q) $(CC) $(CFLAGS) $(INCLUDES) $(CINC) $(DEP_INC) -c -o $(@) $<
 
 %.o:%.S
-#	$(info |     [AS]   Compiling assembly file $^ into $@)
-	@$(AS) $(ASFLAGS) -c -o $@ $^
+	$(E) $(AS_STR) $(shell basename $(CURDIR))/$^
+	$(Q) $(AS) $(ASFLAGS) -c -o $@ $^
 
 server_stubs: $(S_STUB_OBJS)
-#	$(if $(S_STUB_OBJS), $(info |     [LD]   Creating server stubs for $(IFNAME)))
-	@$(if $(S_STUB_OBJS), $(LD) -r -o $(SERVER_STUB) $^)
+	$(if $(S_STUB_OBJS), $(E) $(LD_STR) $(shell basename $(CURDIR))/$(SERVER_STUB))
+	$(Q) $(if $(S_STUB_OBJS), $(LD) -r -o $(SERVER_STUB) $^)
 
 client_stubs: $(C_STUB_OBJS)
-#	$(if $(C_STUB_OBJS), $(info |     [LD]   Creating client stubs from $(IFNAME)))
-	@$(if $(C_STUB_OBJS), $(LD) -r -o $(CLIENT_STUB) $^)
+	$(if $(C_STUB_OBJS), $(E) $(LD_STR) $(shell basename $(CURDIR))/$(CLIENT_STUB))
+	$(Q) $(if $(C_STUB_OBJS), $(LD) -r -o $(CLIENT_STUB) $^)
 
 stubs: server_stubs client_stubs
 
 clean:
-#	$(info |     [RM]   Cleaning up interface directory for $(IFNAME))
-	@$(RM) -f a.out *.o *.a *.d *~ $(STUB_DIR)/*.o $(FNEXP_FILE)
+	$(E) $(RM_STR) Cleaning up interface directory for $(IFNAME)
+	$(Q) $(RM) -f a.out *.o *.a *.d *~ $(STUB_DIR)/*.o $(FNEXP_FILE)
 
 fresh: clean all
+

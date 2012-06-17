@@ -4,24 +4,22 @@ MAKEFLAGS=-I$(shell pwd)
 
 .PHONY: all
 all: 
-	$(info ***********************************************)
-	$(info *********[ Building Implementations ]**********)
-	$(info ***********************************************)
-	@for dir in $(SUBDIRS) ; do \
+	$(call print_header, Building Implementations)
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) $(MAKEFLAGS) -C $$dir ; \
 	done
 
 .PHONY: cp
 cp:
-	$(info |     [CP]   Copying all components to $(TRANS_DIR))
-	@for dir in $(SUBDIRS) ; do \
+	$(E) $(CP_STR) Copying all components to $(TRANS_DIR)
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) $(MAKEFLAGS) -C $$dir cp ; \
 	done
 
 .PHONY: clean
 clean:
-	$(info |     [RM]   Cleaning up implementation directories)
-	@for dir in $(SUBDIRS) ; do \
+	$(E) $(RM_STR) Cleaning up implementation directories
+	$(Q)for dir in $(SUBDIRS) ; do \
 		$(MAKE) $(MAKEFLAGS) -C $$dir clean ; \
 	done
 

@@ -1,20 +1,17 @@
 include Makefile.src Makefile.comp
-
 INTERFACES=$(wildcard */)
 
 .PHONY: all
 all:
-	$(info ***********************************************)
-	$(info ************[ Building interfaces ]************)
-	$(info ***********************************************)
-	@for dir in $(INTERFACES) ; do \
+	$(call print_header, Building Interfaces)
+	$(Q)for dir in $(INTERFACES) ; do \
 		$(MAKE) -C $$dir ; \
 	done
 
 .PHONY: clean
 clean:
-	$(info |     [RM]   Cleaning up interface directories)
-	@for dir in $(INTERFACES) ; do \
+	$(E) $(RM_STR) Cleaning up interface directories
+	$(Q)for dir in $(INTERFACES) ; do \
 		$(MAKE) -C $$dir clean ; \
 	done
 

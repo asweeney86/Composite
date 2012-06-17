@@ -1,3 +1,4 @@
+include Makefile.src
 reset: clean cp build
 
 init: ready_hw first
@@ -13,14 +14,14 @@ ready_hw:
 first: cp build
 
 cp:
-	rm *.o
-	cp $(TRANS_DIR)/* $(TEST_DIR)
+	$(Q) rm *.o
+	$(Q) cp $(TRANS_DIR)/* $(TEST_DIR)
 
 clean:
-	rm cos_loader
-	rmmod trans
-	rmmod cnet
-	rmmod cos
+	$(Q) rm cos_loader
+	$(Q) rmmod trans
+	$(Q) rmmod cnet
+	$(Q) rmmod cos
 
 # sync to minimize possible file system corruption on crashes
 build: tar
@@ -47,3 +48,4 @@ print_start:
 	./print &
 
 lprint: print_kill clean cp build print_start
+

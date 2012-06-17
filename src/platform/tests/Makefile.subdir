@@ -8,10 +8,12 @@ OPT     = -ggdb3
 CFLAGS  = -Wall -Wextra $(OPT) $(INCLUDE)
 
 $(EXEC):$(OFILES)
-	$(CC) -o $@ $<
+	$(E) $(CC_STR) $@
+	$(Q) $(CC) -o $@ $<
 
 %.o:%.c
-	$(CC) $(CFLAGS) -c -o $(@) $<
+	$(E) $(CC_STR) $@
+	$(Q) $(CC) $(CFLAGS) -c -o $(@) $<
 
 clean:
-	rm -f $(OFILES) $(EXEC)
+	$(Q) $(RM) -f $(OFILES) $(EXEC)

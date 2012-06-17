@@ -1,8 +1,9 @@
+include Makefile.src
 INTERFACES=net_transport
 
 pre: first all
 first:
-	$(info |     [CP]   copying network stack from lwip)
-	@cp $(LWIPOBJ) .
+	$(E) $(CP_STR) copying network stack from lwip
+	$(Q) cp $(LWIPOBJ) .
 
 include ../Makefile.subdir

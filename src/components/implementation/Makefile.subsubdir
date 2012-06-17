@@ -53,52 +53,52 @@ IFEXP_FILE=.exported_interfaces
 .PHONY: all
 all: $(SOURCE_DEPENDENCIES) $(COMPONENT) fndeps
 
-fndeps:
 #	@sh $(FNDEP_GEN) c.o > $(FNDEP_FILE)
-	@python $(FNDEP_GEN) > $(FNDEP_FILE)
-	@python $(IFEXP_GEN) > $(IFEXP_FILE)
-	@python $(FNDEP_VERIFY)
+fndeps:
+	$(Q) python $(FNDEP_GEN) > $(FNDEP_FILE)
+	$(Q) python $(IFEXP_GEN) > $(IFEXP_FILE)
+	$(Q) python $(FNDEP_VERIFY)
 
 # Jumping through hoops: want to link to our libraries first so that
 # symbols there are used, thus the gcc, and the ld, but then (and only
 # then) do we want to use dietlibc's functions
 $(COMPONENT): $(OBJS) 
-#	$(info |     [LD]   $@: Loading stubs and cos libraries $(if $(strip $(LIB_LIBRARIES)),including $(LIB_LIBRARIES)) into $<)
-	$(info |     [LD]   $@: Linking $(if $(strip $(LIB_LIBRARIES)),$(LIB_LIBRARIES)) $<)
-	@$(LD) -r -o $@.$(TMP_STR) $^ $(IF_SERV_STUBS) $(IF_CLIENT_STUBS) $(LIB_ASM_MANDITORY) $(LIB_FLAGS)
-#	$(info |     [DIET] Linking with dietlibc to produce $@)
-	@$(DIETCC) $(DIETCFLAGS) -Xlinker -r -o $@ $@.$(TMP_STR)
-	@rm $@.$(TMP_STR)
-	@cp $@ c.o
+	$(E) $(LD_STR) $@: Linking $(if $(strip $(LIB_LIBRARIES)),$(LIB_LIBRARIES)) $<
+	$(Q) $(LD) -r -o $@.$(TMP_STR) $^ $(IF_SERV_STUBS) $(IF_CLIENT_STUBS) $(LIB_ASM_MANDITORY) $(LIB_FLAGS)
+	$(E) $(LD_STR) Linking with dietlibc to produce $@
+	$(Q) $(DIETCC) $(DIETCFLAGS) -Xlinker -r -o $@ $@.$(TMP_STR)
+	$(E) $(RM_STR) $@.$(TMP_STR)
+	$(Q) rm $@.$(TMP_STR)
+	$(E) $(CP_STR) $@ c.o
+	$(Q) cp $@ c.o
 
 %.o:%.c
-	$(info |     [CC]   $<: Compiling)
-	@$(CC) $(INCLUDE) $(CFLAGS) -o $@ -c $<
+	$(E) $(CC_STR) $<: Compiling
+	$(Q) $(CC) $(INCLUDE) $(CFLAGS) -o $@ -c $<
 
 %.o:%.S
-#	$(info |     [AS]   Compiling assembly file $^ into $@)
-	$(info |     [AS]   $<: Compiling)
-	@$(AS) $(INCLUDE) $(ASFLAGS) -c -o $@ $^
+	$(E) $(AS_STR) $<: Compiling
+	$(Q) $(AS) $(INCLUDE) $(ASFLAGS) -c -o $@ $^
 
 # see the make manual: create the .d dependencies from include
 # statements.
 %.d:%.c
-#	$(info |     [DEP]  Creating dependency file for $<)
-	@set -e; rm -f $@; \
+	$(E) $(DEP_STR) Creating dependecy file for $<
+	$(Q) set -e; rm -f $@; \
 	$(CC) -M $(INCLUDE) $(CFLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 .PHONY: cp
 cp:
-#	$(info |     [CP]   Copying $(COMPONENT) to $(TRANS_DIR))
-	@cp $(COMPONENT) $(TRANS_DIR)
-	@cp c.o $(TRANS_DIR)/$(COMPNAME).o
+	$(E) $(CP_STR) Copying $(COMPONENT) to $(TRANS_DIR))
+	$(Q) cp $(COMPONENT) $(TRANS_DIR)
+	$(Q) cp c.o $(TRANS_DIR)/$(COMPNAME).o
 
 .PHONY: clean
 clean:
-#	$(info |     [RM]   Cleaning up implementation directory for component $(COMPNAME))
-	@rm -f a.out *.o *.a *.d *.d.* *~ $(FNDEP_FILE) $(IFEXP_FILE)
+	$(E) $(RM_STR) Cleaning $(COMPNAME)
+	$(Q) $(RM) -f a.out *.o *.a *.d *.d.* *~ $(FNDEP_FILE) $(IFEXP_FILE)
 
 fresh: clean all
 

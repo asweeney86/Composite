@@ -14,29 +14,37 @@ all: $(LIBS) $(MAND) $(SIMPLE_STKLIB)
 # symbol conflicts and this is why we have the %.a here and don't
 # output a .a file.
 %.a:%.c
-	$(info |     [CC]   Creating library file $@ from $^)
-	@$(CC) $(CFLAGS) $(CINC) -o $(@:%.a=%.o) -c $<
-	@$(AR) cr lib$@ $(@:%.a=%.o)
+	$(E) $(CC_STR) Creating library file $@ from $^
+	$(Q) $(CC) $(CFLAGS) $(CINC) -o $(@:%.a=%.o) -c $<
+	$(E) $(AR_STR) lib$@ $(@:%.a=%.o)
+	$(Q) $(AR) cr lib$@ $(@:%.a=%.o)
 
 $(MAND): $(MANDITORY)
-	@$(LD) -r -o $@ $^
-
+	$(call print_header, Building Manditory Libs)
+	$(E) $(LD_STR) $@
+	$(Q) $(LD) -r -o $@ $^
 
 $(SIMPLE_STKLIB): $(SIMPLE_STACKS)
-	@$(LD) -r -o $@ $^
+	$(E) $(LD_STR) $@
+	$(Q) $(LD) -r -o $@ $^
 
 %.o:%.S
-	$(info |     [AS]   Compiling assembly file $^ into $@)
-	@$(AS) $(ASFLAGS) $(CINC) -c -o $@ $^
+	$(E) $(AS_STR) $@
+	$(Q) $(AS) $(ASFLAGS) $(CINC) -c -o $@ $^
 
 clean:
-	$(info |     [RM]   Cleaning up directory)
-	@rm -f a.out *.o *.a *.d *~
+	$(E) $(RM_STR) Cleaning up directory
+	$(Q) $(RM) -f a.out *.o *.a *.d *~
 
 distclean:
-	make -C dietlibc clean
-	make -C lwip/cos clean	
+	$(Q) $(MAKE) -C dietlibc clean
+	$(Q) $(MAKE) -C lwip/cos clean	
 
-init: clean distclean all
-	make -C dietlibc
-	make -C lwip/cos
+# For some reason I have to first compile dietlibc for x86_64
+init: all
+	$(call print_header, Building dietlibc)
+	$(Q) $(MAKE) -C dietlibc 
+	$(Q) $(MAKE) -C dietlibc i386
+	$(call print_header, Building lwip)
+	$(Q) $(MAKE) -C lwip/cos
+

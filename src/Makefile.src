@@ -1,16 +1,63 @@
-include Makefile.cosconfig
+TOP_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-# the directory this file is in
-TOP_DIR=$(CODE_DIR)/composite/src/
-# the directory the linux source is in
-#LDIR=$(CODE_DIR)/linux-2.6.33/
-# the directory all objects will be copied to when they are ready for
-# deployment
-#TRANS_DIR=$(HOME_DIR)/transfer
-# the directory that root can access that the objects are copied to
-# where the experiments are run from
-#TEST_DIR=/root/experiments
+# Turn on/off verbose
+#V := 1
+ifeq ($(strip $(V)),)
+	E = @echo
+	Q = @
+else
+	E = @\#
+	Q =
+endif
+export E Q
 
+# Determine if we are on a 64bit system.. assuming x86_64
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+
+# 64 bit system and we currently only support 32 bit
+CFLAGS  += -m32
+LDFLAGS += -m elf_i386
+ASFLAGS += --32
+
+endif
+
+# Needed to build the basic kernel
+#CFLAGS += -ffreestanding -nostdlib -mno-red-zone
+#LDFLAGS += -nostdlib -fno-builtin -nostartfiles -nostdinc -nodefaultlibs 
+
+
+#CFLAGS	+= -std=c99
+#FIXME I have to use gnu99 because the code uses asm not __asm__ and its not
+#currently typedef'd
+CFLAGS	+= -std=gnu99
+CFLAGS  += -O3
+CFLAGS  += -g3
+CFLAGS  += -w
+
+#WARNINGS += -w
+#WARNINGS += -Werror
+#WARNINGS += -Wall
+#WARNINGS += -Wcast-align
+#WARNINGS += -Wformat=2
+#WARNINGS += -Winit-self
+#WARNINGS += -Wmissing-declarations
+#WARNINGS += -Wmissing-prototypes
+#WARNINGS += -Wnested-externs
+#WARNINGS += -Wno-system-headers
+#WARNINGS += -Wold-style-definition
+#WARNINGS += -Wredundant-decls
+#WARNINGS += -Wsign-compare
+#WARNINGS += -Wstrict-prototypes
+#WARNINGS += -Wundef
+#WARNINGS += -Wvolatile-register-var
+#WARNINGS += -Wwrite-strings
+#WARNINGS += -Winline
+
+CFLAGS += $(WARNINGS)
+
+# Directory Structure
+LDIR=$(TOP_DIR)/../linux/
 KDIR=$(TOP_DIR)/kernel/
 KINC=$(TOP_DIR)/kernel/include/
 SHAREDINC=$(TOP_DIR)/kernel/include/shared/
@@ -19,12 +66,29 @@ CDIR=$(TOP_DIR)/components/
 LINKER_DIR=$(TOP_DIR)/platform/linux/link_load/
 NET_DIR=$(TOP_DIR)/platform/linux/net/
 
-# tools
-MAKE=make
-CC=gcc
-AR=ar
-LD=ld
-AS=$(CC)
-MV=mv
-CP=cp
-RM=rm
+# Build tools
+MAKE := make --no-print-directory
+CC := gcc $(CFLAGS)
+AR := ar
+LD := ld $(LDFLAGS)
+AS := $(CC)
+MV := mv
+CP := cp
+RM := rm -f
+MKDIR := mkdir -p
+FIND := find
+CSCOPE := cscope
+TAGS := ctags
+
+# Pretty Print
+AR_STR  := "  AR      "
+AS_STR  := "  AS      "
+BLD_STR := "  BLD     "
+CC_STR  := "  CC      "
+CP_STR  := "  CP      "
+DEP_STR := "  DEP     "
+LD_STR  := "  LINK    "
+RM_STR  := "  RM      "
+
+print_header = @printf '\n\e[1;37m --[\e[0;32m $(1)\e[m\n\n';
+
